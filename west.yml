@@ -1,0 +1,11 @@
+manifest:
+  remotes:
+    - name: stolniceanuiustin
+      url-base: https://github.com/stolniceanuiustin
+  projects:
+    - name: zephyr
+      remote: stolniceanuiustin
+      revision: zynq7000-pl310
+      import: true
+  self:
+    path: nes-app
