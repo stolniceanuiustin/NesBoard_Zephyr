@@ -48,6 +48,7 @@ app/                  Zephyr application
   src/video/                  framebuffer TCP sender, palette table
 tests/controller/     standalone controller test, prints button state
 tools/pc_viewer/      PC-side viewer for the TCP framebuffer stream
+bitstreams/           boot files for zfpga: BOOT.BIN, u-boot.img, system_top.bit
 tools/zfpga/          submodule: flash a Zephyr app + bitstream to the SD card
 west.yml              pins Zephyr (upstream main + PL310 support)
 ```
@@ -102,10 +103,18 @@ the firmware as a C array. The build produces `build/zephyr/zephyr.bin`.
 
 1. Build the bitstream in the NesBoard Vivado project (or use an existing
    `design_1_wrapper.bit`).
-2. Put `zephyr.bin` and the bitstream on the ZedBoard SD card. U-Boot loads
-   the bitstream first, then boots Zephyr, so the BRAM and GPIO exist before
-   the app touches them. `tools/zfpga` automates this, see
-   `tools/zfpga/README.md` for its workspace layout and SD card setup.
+2. Flash with the bundled `zfpga` (boot files are in `bitstreams/nes_emulator/`):
+
+   ```
+   tools/zfpga/zfpga init                      # once per bench: SD card / mux
+   tools/zfpga/zfpga flash nes_emulator -- -DNES_ROM=/path/to/game.nes
+   ```
+
+   U-Boot loads the bitstream first, then boots Zephyr, so the BRAM and GPIO
+   exist before the app touches them. Run it from inside the west workspace
+   (the directory that contains `zephyr/` and `nes-emulator/`). Without an SD
+   mux, `flash` stages the files and prints manual copy instructions. See
+   `tools/zfpga/README.md`.
 3. Connect the controller and VGA, power the board.
 
 The serial console prints the profile once a second, for example
