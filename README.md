@@ -20,3 +20,22 @@ west build -b zedboard nes-app/app -- -DNES_ROM=/path/to/game.nes
 ```
 
 The ROM is not in the repo. Load the bitstream from the NesBoard repo.
+
+## NES controller pinout
+
+Standard NES controller plug, numbered as in the NES pinout (pin 1 is the
+square pad / closest to the flat edge of the plug):
+
+| NES pin | Signal | ZedBoard JA PMOD | EMIO / Zephyr |
+|---------|--------|------------------|---------------|
+| 1 | GND | GND | - |
+| 2 | CLOCK | JA2 (AA11) | `psgpio_bank2` pin 1 |
+| 3 | LATCH | JA1 (Y11) | `psgpio_bank2` pin 0 |
+| 4 | DATA | JA3 (Y10) | `psgpio_bank2` pin 2 |
+| 5 | N/C | - | - |
+| 6 | N/C | - | - |
+| 7 | VCC | JA VCC (3.3 V) | - |
+
+Power the controller from the PMOD's 3.3 V so DATA stays within the Zynq
+LVCMOS33 input range. Pin assignments live in `app/boards/zedboard.overlay` and the Vivado
+XDC.
