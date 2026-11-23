@@ -20,7 +20,6 @@ struct Instruction
     byte xx;
     byte y;
 };
-extern volatile bool cpu_debug_print;
 // CPU internal registers
 extern byte A;
 extern byte X;
@@ -87,19 +86,9 @@ void push_address(uint16_t address);
 byte pop();
 uint16_t pop_address();
 
-int estimate_cycles();
-int estimate_cycles_group_sb1();
-int estimate_cycles_group_sb2();
-bool estimate_page_cross_g1();
-int estimate_cycles_group_1();
-int estimate_cycles_group_2();
-int estimate_cycles_group_3();
-bool estimate_page_cross_g23();
 
 // First group of instructions
 void branch();
-uint16_t compute_addr_mode_g1();
-void run_instruction_group1(uint16_t address);
 void ORA(uint16_t address);
 void AND(uint16_t address);
 void EOR(uint16_t address);
@@ -110,8 +99,6 @@ void CMP(uint16_t address);
 void SBC(uint16_t address);
 
 // Second group of instructions
-bool compute_addr_mode_g23(uint16_t &address_to_return);
-void run_instruction_group2(uint16_t address, bool accumulator);
 void ASL_acc();
 void ASL(uint16_t address);
 void ROL_acc();
@@ -120,17 +107,12 @@ void LSR_acc();
 void LSR(uint16_t address);
 void ROR_acc();
 void ROR(uint16_t address);
-void ASL_b(uint16_t address, bool accumulator);
-void ROL_b(uint16_t address, bool accumulator);
-void LSR_b(uint16_t address, bool accumulator);
-void ROR_b(uint16_t address, bool accumulator);
 void STX(uint16_t address);
 void LDX(uint16_t address);
 void DECC(uint16_t address); // dec is defined as 10 somewhere?
 void INC(uint16_t address);
 
 // Third group of instructions
-void run_instruction_group3(uint16_t addresss);
 void JMP_abs(uint16_t jump_address);
 void JMP_indirect(uint16_t jump_address);
 void BITT(uint16_t address);
@@ -140,7 +122,6 @@ void CPX(uint16_t address);
 void LDY(uint16_t address);
 
 // SINGLE BYTE INSTRUCTIONS
-void run_instruction_group_sb1();
 void PHP();
 void PLP();
 void PHA();
@@ -159,13 +140,11 @@ void CLD();
 void SED();
 void BRK();
 
-void run_instruction_group_sb2();
 void TXA();
 void TXS();
 void TAX();
 void TSX();
 void DEX();
-void NOPP();
 
 // INTERRUPTS
 void RTS();

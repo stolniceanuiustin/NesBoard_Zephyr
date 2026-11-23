@@ -164,7 +164,6 @@ int main(void)
         return -1;
     }
 
-    bus_init();
     cpu_init();
     cpu_reset();
     ppu_init();

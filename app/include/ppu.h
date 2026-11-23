@@ -144,7 +144,6 @@ extern byte sprite_cnt;
 extern byte sp_pattern_l[8];        // Every sprite pattern is made of 16 bits
 extern byte sp_pattern_h[8];
 extern bool sprite_zero_on_scanline;
-extern bool sprite_zero_is_rendering;
 void ppu_reset();
 void ppu_render_scanline();
 void ppu_execute();
@@ -188,7 +187,6 @@ void clock_shifters();
 
 inline void load_bg_shifters();
 inline void transfer_address_x();
-inline void increment_scroll_x();
 inline void increment_scroll_y();
 inline void transfer_address_y();
 

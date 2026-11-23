@@ -108,11 +108,9 @@ void memory_init()
     // extern byte PRGrom[0x8000];
     // extern byte CHRrom[0x4000];
     // extern byte CPUram[0x0800];
-    // extern byte PPUram[0x3FFF];
     memset(PRGrom, 0, 0x8000);
     memset(CHRrom, 0, 0x4000);
     memset(CPUram, 0, 0x0800);
-    memset(PPUram, 0, 0x3FFF);
     memset(PRGram, 0, 0x2000);
     
 }

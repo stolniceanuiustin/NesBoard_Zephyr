@@ -64,14 +64,14 @@ void ppu_init()
         sp_pattern_l[i] = 0;
     }
 
-    if (mirroring == HORIZONTAL)
+    if (mirroring == VERTICAL)
     {
         nametable_ptrs[0] = nametable[0];
         nametable_ptrs[1] = nametable[1];
         nametable_ptrs[2] = nametable[0];
         nametable_ptrs[3] = nametable[1];
     }
-    else if (mirroring == VERTICAL)
+    else if (mirroring == HORIZONTAL)
     {
         nametable_ptrs[0] = nametable[0];
         nametable_ptrs[1] = nametable[0];
@@ -589,20 +589,6 @@ inline void transfer_address_x()
     {
         vaddr.nametable_x = taddr.nametable_x;
         vaddr.coarse_x = taddr.coarse_x;
-    }
-}
-
-inline void increment_scroll_x()
-{
-    if (mask.render_background)
-    {
-        if (vaddr.coarse_x == 31)
-        {
-            vaddr.coarse_x = 0;
-            vaddr.nametable_x = ~vaddr.nametable_x;
-        }
-        else
-            vaddr.coarse_x++;
     }
 }
 

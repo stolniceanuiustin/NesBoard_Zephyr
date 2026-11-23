@@ -5,11 +5,6 @@
 #include "memory.h"
 typedef uint8_t byte;
 
-struct Nametable_Map
-{
-    uint16_t map[4];
-};
-
 enum MIRROR
 {
     VERTICAL,

@@ -6,18 +6,11 @@ typedef uint8_t byte;
 // =============BUS VARIABLES=================
 byte controller[2];
 byte controller_state[2];
-bool dma_transfer;
-bool dma_first_clock;
-byte oam_dma_page = 0x00;
-byte oam_dma_addr = 0x00;
-byte oam_dma_data = 0x00;
-uint32_t global_clock = 0;
 
 // ==============MEMORY VARIABLES=============
 byte PRGrom[0x8000];
 byte CHRrom[0x4000];
 byte CPUram[0x0800];
-byte PPUram[0x3FFF];
 byte PRGram[0x2000];
 
 
@@ -28,7 +21,6 @@ byte X = 0x00;
 byte Y = 0x00;
 uint16_t PC = 0x0000;
 byte SP = 0xFD; 
-volatile bool cpu_debug_print = 0;
 uint32_t opcode = 0;
 
 
@@ -100,7 +92,6 @@ byte sprite_cnt = 0;
 byte sp_pattern_l[8] = {0};
 byte sp_pattern_h[8] = {0};
 bool sprite_zero_on_scanline = false;
-bool sprite_zero_is_rendering = false;
 
 byte flip_byte[256] = {0};
 byte transparent_pixel_color = 0;

@@ -96,29 +96,6 @@ void ASL_acc()
     set_ZN(A);
 }
 
-void ASL_b(uint16_t address, bool accumulator)
-{
-    // Arithmetic shift left
-    // Carry = old bit 7
-    // bit 0 = 0
-    if (accumulator)
-    {
-        uint16_t carry_flag = A & (1 << 7);
-        C = !!carry_flag;
-
-        A = A << 1;
-        set_ZN(A);
-    }
-    else
-    {
-        byte operand = read(address);
-        uint16_t carry_flag = operand & (1 << 7);
-        C = !!carry_flag;
-        cpu_write(address, operand << 1);
-        set_ZN(read(address));
-    }
-}
-
 void ASL(uint16_t address)
 {
     byte operand = read(address);
@@ -137,33 +114,6 @@ void ROL_acc()
 
     C = !!carry_flag;
     set_ZN(A);
-}
-
-void ROL_b(uint16_t address, bool accumulator)
-{
-    // rotate left
-    if (accumulator)
-    {
-        uint16_t carry_flag = A & (1 << 7);
-        A = A << 1;
-        A &= ~1;   // Clear last bit;
-        A = A | C; // Set last bit to carry (the old carry, the documentation says so)
-
-        C = !!carry_flag;
-
-        set_ZN(A);
-    }
-    else
-    {
-        byte operand = read(address);
-        uint16_t carry_flag = operand & (1 << 7);
-        operand = operand << 1;
-        operand &= ~1;
-        operand |= C;
-        cpu_write(address, operand);
-        C = !!carry_flag;
-        set_ZN(operand);
-    }
 }
 
 void ROL(uint16_t address)
@@ -185,30 +135,6 @@ void LSR_acc()
     A &= ~(1 << 7); // clear first bit(should be clear already);
     C = !!carry_flag;
     set_ZN(A);
-}
-
-void LSR_b(uint16_t address, bool accumulator)
-{
-    // Logical shift right
-    if (accumulator)
-    {
-        uint16_t carry_flag = A & 1;
-        A = A >> 1;
-        A &= ~(1 << 7); // clear first bit(should be clear already);
-
-        C = !!carry_flag;
-        set_ZN(A);
-    }
-    else
-    {
-        byte operand = read(address);
-        uint16_t carry_flag = operand & 1;
-        operand = operand >> 1;
-        operand &= ~(1 << 7);
-        cpu_write(address, operand);
-        C = !!carry_flag;
-        set_ZN(operand);
-    }
 }
 
 void LSR(uint16_t address)
@@ -233,33 +159,6 @@ void ROR_acc()
 
     C = !!carry_flag;
     set_ZN(A);
-}
-void ROR_b(uint16_t address, bool accumulator)
-{
-    // Rotate right
-    if (accumulator)
-    {
-        int carry_flag = A & 1;
-        A = A >> 1;
-        A &= ~(1 << 7); // clear first bit(should be clear already);
-        A |= C << 7;    // set first bit to carry flag
-
-        C = !!carry_flag;
-        set_ZN(A);
-    }
-    else
-    {
-        byte operand = read(address);
-        int carry_flag = operand & 1;
-
-        operand = operand >> 1;
-        operand &= ~(1 << 7);
-        operand |= C << 7;
-        cpu_write(address, operand);
-
-        C = !!carry_flag;
-        set_ZN(operand);
-    }
 }
 void ROR(uint16_t address)
 {
@@ -493,11 +392,6 @@ void DEX()
 /*
 interrupts
 */
-void NOPP()
-{
-    // cycles += 2;
-}
-
 void JSR_abs(uint16_t address)
 {
     push_address(PC);
@@ -513,7 +407,6 @@ void RTS()
 
 void BRK()
 {
-    int t = 0;
     if (I == 0)
     {
         trigger_irq();

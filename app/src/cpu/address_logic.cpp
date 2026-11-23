@@ -57,7 +57,6 @@ uint16_t addr_pzero_page_y()
     byte low_byte = read(zeropage_adr);
     byte high_byte = read((zeropage_adr + 1) & 0x00FF);
     address = (high_byte << 8) | low_byte;
-    uint16_t aux_addr = address;
     address += Y;
     return address;
 }

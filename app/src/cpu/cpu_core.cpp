@@ -11,12 +11,8 @@
 #include "cpu_vars.h"
 // #include "tracer.h"
 
-#define DEBUG
 
 
-typedef void (*cpu_op_fn)(uint16_t address);
-typedef void (*cpu_op_fn_acc)();
-const uint16_t null_address = 0;
 static InstructionHandler opcode_table[256];
 
 // All instructions are explained here: https://www.masswerk.at/6502/6502_instruction_set.html
@@ -478,11 +474,6 @@ void cpu_clock()
             return;
         }
         opcode = read_pc();
-        // Thankfully the CPU was thouroughly tested on x86 so we don't need this
-        // if (cpu_debug_print)
-        // {
-        //    Serial.printf("Opcode: %02X, PC: %04X | A:%02X X:%02X Y:%02X\n", opcode, PC, A, X, Y);
-        //}
         remaining_cycles += OPCODE_duration[opcode];
         opcode_table[opcode]();
         return;

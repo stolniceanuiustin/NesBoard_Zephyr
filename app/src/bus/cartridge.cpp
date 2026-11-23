@@ -15,7 +15,6 @@ static const uint8_t rom_buf[] = {
 
 LOG_MODULE_REGISTER(cartridge, LOG_LEVEL_INF);
 
-Nametable_Map nametablee;
 Config config;
 MIRROR mirroring;
 byte cart_mapper;
@@ -342,14 +341,6 @@ void mapper_scanline(void)
     }
 }
 
-static void set_mapping(uint16_t top_left, uint16_t top_right, uint16_t bottom_left, uint16_t bottom_right)
-{
-    nametablee.map[0] = top_left;
-    nametablee.map[1] = top_right;
-    nametablee.map[2] = bottom_left;
-    nametablee.map[3] = bottom_right;
-}
-
 bool cartridge_read_file(const char *rom_name)
 {
     ARG_UNUSED(rom_name);
@@ -380,13 +371,11 @@ bool cartridge_read_file(const char *rom_name)
 
     byte nametable_type = (header->flags6 & 1);
     if (nametable_type == 0) {
-        LOG_INF("Vertical mirroring");
-        mirroring = VERTICAL;
-        set_mapping(0, 0x400, 0, 0x400);
-    } else {
         LOG_INF("Horizontal mirroring");
         mirroring = HORIZONTAL;
-        set_mapping(0, 0, 0x400, 0x400);
+    } else {
+        LOG_INF("Vertical mirroring");
+        mirroring = VERTICAL;
     }
     config.nametable_arrangement = (nametable_type == 1) ? 1 : 0;
 
