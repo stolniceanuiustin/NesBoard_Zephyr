@@ -1,4 +1,4 @@
-# nes-app
+# nes-emulator
 
 NES emulator for the Avnet ZedBoard (Zynq-7000), running on Zephyr. Frames are
 written to a BRAM framebuffer scanned out by the VGA controller in the PL
@@ -14,9 +14,9 @@ west.yml          Zephyr (upstream + PL310 L2 cache) pinned via west
 ## Build
 
 ```
-git clone https://github.com/stolniceanuiustin/nes-app nes-ws/nes-app
-cd nes-ws && west init -l nes-app && west update
-west build -b zedboard nes-app/app -- -DNES_ROM=/path/to/game.nes
+git clone https://github.com/stolniceanuiustin/NesBoard_Zephyr ws/nes-emulator
+cd ws && west init -l nes-emulator && west update
+west build -b zedboard nes-emulator/app -- -DNES_ROM=/path/to/game.nes
 ```
 
 The ROM is not in the repo. Load the bitstream from the NesBoard repo.

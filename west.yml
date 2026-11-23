@@ -8,4 +8,4 @@ manifest:
       revision: zynq7000-pl310
       import: true
   self:
-    path: nes-app
+    path: nes-emulator
