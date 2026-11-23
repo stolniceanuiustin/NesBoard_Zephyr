@@ -16,6 +16,8 @@ This repo is a west manifest repo. zfpga must run from a west workspace:
 <ws>/build/           zfpga's build dir (created by `zfpga flash`)
 ```
 
+On the author's machine `<ws>` is `~/Licenta`.
+
 zfpga finds `<ws>` by walking up from `tools/zfpga` to the nearest dir with
 `zephyr/`. Override with `ZFPGA_WS`. It picks up `bitstreams/` of this repo
 automatically (override: `ZFPGA_BITSTREAMS`).

@@ -6,6 +6,36 @@ manifest:
     - name: zephyr
       remote: stolniceanuiustin
       revision: zynq7000-pl310
-      import: true
+      import:
+        name-blocklist:
+          - hal_adi
+          - hal_afbr
+          - hal_ambiq
+          - hal_atmel
+          - hal_bouffalolab
+          - hal_espressif
+          - hal_ethos_u
+          - hal_gigadevice
+          - hal_infineon
+          - hal_intel
+          - hal_microchip
+          - hal_nordic
+          - hal_nuvoton
+          - hal_nxp
+          - hal_openisa
+          - hal_quicklogic
+          - hal_realtek
+          - hal_renesas
+          - hal_rpi_pico
+          - hal_sifli
+          - hal_silabs
+          - hal_st
+          - hal_stm32
+          - hal_tdk
+          - hal_telink
+          - hal_ti
+          - hal_wch
+          - hal_wurthelektronik
+          - hal_xtensa
   self:
     path: nes-emulator
