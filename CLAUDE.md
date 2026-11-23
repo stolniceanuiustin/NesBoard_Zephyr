@@ -33,13 +33,13 @@ If the submodule is empty: `git submodule update --init`.
 
 ## Flashing
 
-Needs a ROM and the Zephyr SDK/west environment active. The ROM is not in the
+Run from the repo root (`./zfpga` is a symlink to `tools/zfpga/zfpga`). Needs a ROM and the Zephyr SDK/west environment active. The ROM is not in the
 repo.
 
 ```
-<ws>/nes-emulator/tools/zfpga/zfpga init                 # once per bench
-<ws>/nes-emulator/tools/zfpga/zfpga flash nes_emulator -- -DNES_ROM=/abs/path/game.nes
-<ws>/nes-emulator/tools/zfpga/zfpga console nes_emulator # UART + boot log
+./zfpga init                 # once per bench
+./zfpga flash nes_emulator -- -DNES_ROM=/abs/path/game.nes
+./zfpga console nes_emulator # UART + boot log
 ```
 
 - `flash nes_emulator` resolves everything from `bitstreams/nes_emulator/`:

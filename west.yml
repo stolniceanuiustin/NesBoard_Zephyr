@@ -37,5 +37,6 @@ manifest:
           - hal_wch
           - hal_wurthelektronik
           - hal_xtensa
+          - nrf_hw_models
   self:
     path: nes-emulator
