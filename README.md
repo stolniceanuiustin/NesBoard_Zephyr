@@ -1,30 +1,68 @@
 # nes-emulator
 
-NES emulator for the Avnet ZedBoard (Zynq-7000), running on Zephyr. Frames are
-written to a BRAM framebuffer scanned out by the VGA controller in the PL
-(Vivado project: https://github.com/stolniceanuiustin/NesBoard).
+A NES emulator that runs on the Avnet ZedBoard (Zynq-7000, Cortex-A9) under
+Zephyr RTOS. The emulated PPU draws into a BRAM framebuffer that a VGA
+controller in the FPGA fabric scans out, and a real NES controller is read
+over PMOD GPIO.
+
+This is the software half of a bachelor thesis project. The FPGA half (VGA
+controller, block design, bitstream) lives in the Vivado project repo
+[NesBoard](https://github.com/stolniceanuiustin/NesBoard).
+
+## How it works
 
 ```
-app/              emulator (src/{cpu,ppu,bus,input,video}, include/, boards/zedboard.overlay)
-tests/controller/ standalone NES controller GPIO test (see WIRING.md)
-tools/pc_viewer/  optional UDP framebuffer viewer
-west.yml          Zephyr (upstream + PL310 L2 cache) pinned via west
+        Cortex-A9 (Zephyr)                          Programmable logic
+ ┌──────────────────────────────┐             ┌──────────────────────────┐
+ │ emu thread   6502 + PPU      │  AXI        │ AXI BRAM ctrl + 64 KB    │
+ │   1 frame -> 256x240 pixels ─┼────────────>│ BRAM @ 0x4000_0000       │──> VGA
+ │ input thread  NES controller │             │ VGA controller           │
+ │   (EMIO GPIO, polled 10 ms)  │<── JA PMOD ─┤ EMIO GPIO 0..2           │
+ │ net: TCP framebuffer stream  │             └──────────────────────────┘
+ └──────────────────────────────┘
 ```
 
-## Build
+- The emulation thread runs one NES frame per iteration (scanline-based PPU,
+  about 113.67 CPU cycles per scanline) and is paced to 60 Hz with absolute
+  deadlines.
+- Each frame is `256x240` bytes of NES palette indices. It is copied to the
+  BRAM framebuffer (mapped uncached at `0x40000000`) and also streamed over
+  TCP for debugging.
+- The PL310 L2 cache controller is enabled to reach 60 fps.
+- The ROM is embedded into the firmware at build time.
+
+Supported cartridges: NROM (mapper 0), MMC1 (1), MMC3 (4).
+
+## Repository layout
 
 ```
-git clone https://github.com/stolniceanuiustin/NesBoard_Zephyr ws/nes-emulator
-cd ws && west init -l nes-emulator && west update
-west build -b zedboard nes-emulator/app -- -DNES_ROM=/path/to/game.nes
+app/                  Zephyr application
+  CMakeLists.txt, prj.conf
+  boards/zedboard.overlay     controller GPIO + BRAM framebuffer nodes
+  include/                    headers
+  src/main.cpp                threads, frame pacing, init
+  src/cpu/                    6502 core, instructions, addressing
+  src/ppu/                    PPU (background, sprites, scroll)
+  src/bus/                    CPU bus, memory map, cartridge + mappers
+  src/input/nes_controller.cpp  NES controller driver (74HC4021 protocol)
+  src/video/                  framebuffer TCP sender, palette table
+tests/controller/     standalone controller test, prints button state
+tools/pc_viewer/      PC-side viewer for the TCP framebuffer stream
+tools/zfpga/          submodule: flash a Zephyr app + bitstream to the SD card
+west.yml              pins Zephyr (upstream main + PL310 support)
 ```
 
-The ROM is not in the repo. Load the bitstream from the NesBoard repo.
+## Hardware
 
-## NES controller pinout
+- Avnet ZedBoard
+- NES controller (original or clone)
+- Monitor on the ZedBoard VGA connector
+- The bitstream built from the NesBoard Vivado project
+
+### NES controller pinout
 
 Standard NES controller plug, numbered as in the NES pinout (pin 1 is the
-square pad / closest to the flat edge of the plug):
+square pad, next to the flat edge of the plug):
 
 | NES pin | Signal | ZedBoard JA PMOD | EMIO / Zephyr |
 |---------|--------|------------------|---------------|
@@ -37,11 +75,63 @@ square pad / closest to the flat edge of the plug):
 | 7 | VCC | JA VCC (3.3 V) | - |
 
 Power the controller from the PMOD's 3.3 V so DATA stays within the Zynq
-LVCMOS33 input range. Pin assignments live in `app/boards/zedboard.overlay` and the Vivado
-XDC.
+LVCMOS33 input range. The pin assignments are in
+`app/boards/zedboard.overlay` and in the Vivado XDC. Button bits are read
+A, B, Select, Start, Up, Down, Left, Right.
 
-## Flashing
+## Build
 
-`tools/zfpga` is a submodule (zephyr-fpga-tools). Clone with
-`--recurse-submodules`, or run `git submodule update --init` afterwards.
-See `tools/zfpga/README.md` for the zedboard flashing workflow.
+Needs a Zephyr SDK and `west`. The workspace is created around this repo:
+
+```
+mkdir ws && cd ws
+git clone --recurse-submodules https://github.com/stolniceanuiustin/NesBoard_Zephyr nes-emulator
+west init -l nes-emulator
+west update
+west build -b zedboard nes-emulator/app -- -DNES_ROM=/path/to/game.nes
+```
+
+`-DNES_ROM` is required: the ROM is not part of the repo and is embedded in
+the firmware as a C array. The build produces `build/zephyr/zephyr.bin`.
+
+## Run
+
+1. Build the bitstream in the NesBoard Vivado project (or use an existing
+   `design_1_wrapper.bit`).
+2. Put `zephyr.bin` and the bitstream on the ZedBoard SD card. U-Boot loads
+   the bitstream first, then boots Zephyr, so the BRAM and GPIO exist before
+   the app touches them. `tools/zfpga` automates this, see
+   `tools/zfpga/README.md` for its workspace layout and SD card setup.
+3. Connect the controller and VGA, power the board.
+
+The serial console prints the profile once a second, for example
+`avg/frame: emu=... us send=... us (capped ~60 fps)`.
+
+### Optional: PC viewer
+
+The board is a TCP server on `192.0.2.3:5555` and sends length-prefixed
+frames of palette indices:
+
+```
+pip install pygame numpy
+python3 tools/pc_viewer/viewer.py
+```
+
+Set a PC address in `192.0.2.0/24` on the interface cabled to the board.
+
+### Controller test
+
+```
+west build -b zedboard nes-emulator/tests/controller
+```
+
+Prints the button state so you can check wiring before running the emulator.
+
+## Known limitations
+
+- The PPU is scanline-based, not cycle-accurate. Games that depend on
+  mid-scanline timing (sprite-0 hit, MMC3 IRQ) may glitch.
+- CPU cycle counts are a flat per-opcode table without page-cross or branch
+  penalties, and unofficial opcodes are treated as NOPs.
+- Only controller 1 is wired. No audio (APU).
+- Mappers other than 0, 1 and 4 are rejected at load time.
