@@ -30,7 +30,7 @@ static int wait_for_iface(void)
     struct net_if *iface = NULL;
 
     LOG_INF("waiting for network interface to be ready...");
-    for (int i = 0; i < 400; i++) {            /* up to ~20s */
+    for (int i = 0; i < 40; i++) {             /* up to ~2s; on timeout the emulator still runs without streaming */
         if (iface == NULL) {
             iface = net_if_get_default();
         }
