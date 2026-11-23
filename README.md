@@ -61,8 +61,11 @@ west.yml              pins Zephyr (upstream main + PL310 support)
 
 ### NES controller pinout
 
-Standard NES controller plug, numbered as in the NES pinout (pin 1 is the
-square pad, next to the flat edge of the plug):
+![NES controller connector pinout](doc/NES_Controller_pinout.jpg)
+
+Source: [NESPi project part 4, the NES controller protocol](https://www.raspberryfield.life/2018/09/01/nespi-project-part-4-the-nes-controller-protocol/)
+(raspberryfield.life). The photo shows the controller-side connector
+looking into the socket; the table below is the same pinout numbered 1 to 7.
 
 | NES pin | Signal | ZedBoard JA PMOD | EMIO / Zephyr |
 |---------|--------|------------------|---------------|
@@ -74,8 +77,9 @@ square pad, next to the flat edge of the plug):
 | 6 | N/C | - | - |
 | 7 | VCC | JA VCC (3.3 V) | - |
 
-Power the controller from the PMOD's 3.3 V so DATA stays within the Zynq
-LVCMOS33 input range. The pin assignments are in
+The original console supplies +5 V. Here the controller is powered from the
+PMOD's 3.3 V instead, so DATA stays within the Zynq LVCMOS33 input range; do
+not connect it to 5 V. The pin assignments are in
 `app/boards/zedboard.overlay` and in the Vivado XDC. Button bits are read
 A, B, Select, Start, Up, Down, Left, Right.
 
