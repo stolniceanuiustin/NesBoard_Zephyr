@@ -93,7 +93,7 @@ mkdir ws && cd ws
 git clone --recurse-submodules https://github.com/stolniceanuiustin/NesBoard_Zephyr nes-emulator
 west init -l nes-emulator
 west update
-west build -b zedboard nes-emulator/app -- -DNES_ROM=/path/to/game.nes
+west build -b zedboard nes-emulator/app -- -DNES_ROM=$PWD/nes-emulator/roms/game.nes
 ```
 
 `-DNES_ROM` is required: the ROM is not part of the repo and is embedded in
@@ -107,7 +107,7 @@ the firmware as a C array. The build produces `build/zephyr/zephyr.bin`.
 
    ```
    tools/zfpga/zfpga init                      # once per bench: SD card / mux
-   tools/zfpga/zfpga flash nes_emulator -- -DNES_ROM=/path/to/game.nes
+   tools/zfpga/zfpga flash nes_emulator -- -DNES_ROM=$PWD/nes-emulator/roms/game.nes
    ```
 
    U-Boot loads the bitstream first, then boots Zephyr, so the BRAM and GPIO

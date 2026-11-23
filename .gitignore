@@ -3,3 +3,7 @@ build/
 *.nes
 *.bin
 __pycache__/
+
+# ROMs are not distributed with the repo
+roms/*
+!roms/README.md
