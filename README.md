@@ -148,3 +148,11 @@ Prints the button state so you can check wiring before running the emulator.
   penalties, and unofficial opcodes are treated as NOPs.
 - Only controller 1 is wired. No audio (APU).
 - Mappers other than 0, 1 and 4 are rejected at load time.
+
+## References
+
+- [Obelisk 6502 guide](https://www.nesdev.org/obelisk-6502-guide/): 6502 instruction set, addressing modes and registers.
+- [NESdev wiki: PPU](https://www.nesdev.org/wiki/PPU): registers, rendering and timing.
+- [NESdev wiki: PPU memory map](https://www.nesdev.org/wiki/PPU_memory_map): pattern tables, nametables and palettes.
+- [NESdev wiki: CPU memory map](https://www.nesdev.org/wiki/CPU_memory_map): RAM, PPU/APU registers, cartridge space.
+- [NESdev wiki: Standard controller](https://www.nesdev.org/wiki/Standard_controller): the `$4016`/`$4017` shift register protocol.
