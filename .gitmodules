@@ -1,0 +1,3 @@
+[submodule "tools/zfpga"]
+	path = tools/zfpga
+	url = https://github.com/stolniceanuiustin/zephyr-fpga-tools.git

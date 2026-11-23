@@ -39,3 +39,9 @@ square pad / closest to the flat edge of the plug):
 Power the controller from the PMOD's 3.3 V so DATA stays within the Zynq
 LVCMOS33 input range. Pin assignments live in `app/boards/zedboard.overlay` and the Vivado
 XDC.
+
+## Flashing
+
+`tools/zfpga` is a submodule (zephyr-fpga-tools). Clone with
+`--recurse-submodules`, or run `git submodule update --init` afterwards.
+See `tools/zfpga/README.md` for the zedboard flashing workflow.
